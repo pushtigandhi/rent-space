@@ -3,12 +3,18 @@ import {CommonModule} from '@angular/common';
 import {HousingLocationComponent} from '../housing-location/housing-location.component';
 import {HousingLocation} from '../housinglocation';
 import { HousingService } from '../housing.service';
+import {RouterLink, RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HousingLocationComponent],
+  imports: [CommonModule, HousingLocationComponent, RouterLink, RouterOutlet],
   template: `
+    <a [routerLink]="['/']">
+      <header class="brand-name">
+        <img class="brand-logo" src="/assets/logo.svg" alt="Home" aria-hidden="true" />
+      </header>
+    </a>
     <section>
       <form>
         <input type="text" placeholder="Filter by city" #filter>
@@ -22,15 +28,15 @@ import { HousingService } from '../housing.service';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
-  readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';
-
   housingLocationList: HousingLocation[] = [];
   housingService: HousingService = inject(HousingService);
   filteredLocationList: HousingLocation[] = [];
 
   constructor() {
-    this.housingLocationList = this.housingService.getAllHousingLocations();
-    this.filteredLocationList = this.housingLocationList;
+    this.housingService.getAllHousingLocations().then((housingLocationList: HousingLocation[]) => {
+      this.housingLocationList = housingLocationList;
+      this.filteredLocationList = housingLocationList;
+    });
   }
 
   filterResults(text: string) {
